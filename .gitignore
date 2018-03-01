@@ -1,5 +1,0 @@
-*.pyc
-.*.swp
-/dist/
-/py_sam.egg-info/
-/sam.egg-info/
