@@ -1,7 +1,5 @@
-The Spherical Admixture Model
+Semantic Visualization for Spherical Representation
 =============================
 
-An implementation of the SAM topic model, described by:
-
-http://www.cs.utexas.edu/users/ai-lab/pub-view.php?PubID=126961
+An implementation of SSE (http://www.hadylauw.com/publications/kdd14.pdf)
 
