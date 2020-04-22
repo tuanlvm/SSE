@@ -363,9 +363,10 @@ class SSE(PickleFileIO):
 
         for d in range(self.num_docs):
             weights_string = ', '.join([str(each) for each in mean_topic_weights[:, d]])
+            coor_string = ', '.join([str(each) for each in self.x[:, d]])
             label = self.reader.raw_labels[d]
             name = self.reader.names[d]
-            print >>f, '%s, %s, %s, %s, %s' % (name, weights_string, label,str(self.x[0,d]),str(self.x[1,d]))
+            print >>f, '%s, %s, %s, %s' % (name, weights_string, label,coor_string)
         print >>f, 'topic_x\n'
         for t in range(self.T):
             print >>f, str(self.delta[0,t]) + '\t' + str(self.delta[1,t])

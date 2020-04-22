@@ -86,7 +86,44 @@ def optimize_parameter(model, param_name, f, g, bounds=(1e-4, None), disp=0, max
     new_f_val = f()
     log.info('Optimized %s; improvement: %g' % (param_name, new_f_val - old_f_val))
 
+def optimize_parameter_lbfgs_coor(model, f, g, bounds=(1e-4, None), disp=0, max_evals=10):
+    from scipy.optimize import fmin_l_bfgs_b
 
+    doc_x = ModelParameterAcessor(model, 'x')
+    topic_delta = ModelParameterAcessor(model, 'delta')
+
+    # Scipy expects function parameters to be 1d, so we have to ravel/unravel the parameter values for each
+    # evaluation
+    def eval_f(param_as_list):
+        old_value_doc_x = doc_x.get()  # Save old
+        old_value_topic_delta = topic_delta.get()
+        doc_x.set_flattened(param_as_list[:model.num_docs * model.dim])  # Set new
+        topic_delta.set_flattened(param_as_list[model.num_docs * model.dim:])
+        f_val = -f()
+        doc_x.set(old_value_doc_x)  # Restore old value
+        topic_delta.set(old_value_topic_delta)
+        return f_val
+
+    def eval_g(param_as_list):
+        old_value_doc_x = doc_x.get()  # Save old
+        old_value_topic_delta = topic_delta.get()
+        doc_x.set_flattened(param_as_list[:model.num_docs * model.dim])  # Set new
+        topic_delta.set_flattened(param_as_list[model.num_docs * model.dim:])
+        f_prime_val = -g()
+        doc_x.set(old_value_doc_x)  # Restore old value
+        topic_delta.set(old_value_topic_delta)
+        return f_prime_val
+
+    x0 = np.concatenate([ravel(doc_x.get()),ravel(topic_delta.get())])
+#     bounds = [bounds] * len(x0)
+
+    old_f_val = f()
+    x, new_f_val, d = fmin_l_bfgs_b(eval_f, x0, fprime=eval_g, maxfun=max_evals, disp=disp)
+    doc_x.set_flattened(x[:model.num_docs * model.dim])
+    topic_delta.set_flattened(x[model.num_docs * model.dim:])
+    new_f_val = f()
+    log.info('Optimized %s; improvement: %g' % ('x,delta', new_f_val - old_f_val))
+	
 def optimize_parameter_lbfgs(model, param_name, f, g, bounds=(1e-4, None), disp=0, max_evals=100):
     from scipy.optimize import fmin_l_bfgs_b
 

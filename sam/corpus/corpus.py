@@ -303,9 +303,9 @@ def corpus_mean_and_precision(reader):
     return mean, reader.dim * reader.num_data / (sum_squared_norms - 2*mean.dot(sum) + reader.num_data * squared_norm_mean)
 
 
-search_path = [os.getcwd(),  # Current directory
-               os.path.join(os.getenv('HOME'), 'data'),   # ~/data/
-               '/projects/nn/austin/research/data'  # Other places...
+search_path = [os.getcwd()#,  # Current directory
+               #os.path.join(os.getenv('HOME'), 'data'),   # ~/data/
+               #'/projects/nn/austin/research/data'  # Other places...
                ]
 
 def find_corpus(name):
